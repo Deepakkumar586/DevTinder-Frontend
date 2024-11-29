@@ -13,5 +13,22 @@ Currently, two official plugins are available:
 - remove unnecessary code 
 - install tailwind and setup in project
 - install daisy Ui and setup in project
-- add navabar component in app.jsx file
-- 
+- create navabar component with navbar.jsx  and write code inside of component
+- install react-router-dom
+- create BrowserRouter > routes > route=/ Body > RouteChildren
+- create an outlet in your body Component
+- create a login component and write code 
+
+
+
+
+
+# Body
+   Navbar
+   Route/ => Feed
+   Route/login => Login
+   Route/logout => Logout
+   Route/connections => Connections
+   Route/profile => Profile
+
+
