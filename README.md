@@ -18,6 +18,9 @@ Currently, two official plugins are available:
 - create BrowserRouter > routes > route=/ Body > RouteChildren
 - create an outlet in your body Component
 - create a login component and write code 
+- In Backend - install cors => add middleware to with configuration: origin, credentials:true
+- whenever making a api call pass axios  => {withCredentials:true}
+- install redux toolkit
 
 
 
