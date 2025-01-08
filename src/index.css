@@ -1,3 +1,30 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Ensure no horizontal scrolling */
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: hidden; /* Prevent horizontal scrolling */
+  }
+  
+  html {
+    width: 100%;
+    overflow-x: hidden; 
+    /* overflow-y: hidden; */
+    /* Ensure no overflow issues on root */
+  }
+  
+  /* Tailwind-safe fix for full responsiveness */
+  * {
+    box-sizing: inherit;
+  }
+  
+  /* Optional: Add smooth scrolling for a better experience */
+  html {
+    scroll-behavior: smooth;
+  }
+  

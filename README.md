@@ -21,6 +21,11 @@ Currently, two official plugins are available:
 - In Backend - install cors => add middleware to with configuration: origin, credentials:true
 - whenever making a api call pass axios  => {withCredentials:true}
 - install redux toolkit
+- profile edit built with add toast
+- feed api built
+- make connection request component
+- make all connection components
+ 
 
 
 
