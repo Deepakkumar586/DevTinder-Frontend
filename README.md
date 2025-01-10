@@ -25,7 +25,15 @@ Currently, two official plugins are available:
 - feed api built
 - make connection request component
 - make all connection components
- 
+
+<!-- aws command -->
+- signup on AWS
+- Launch instance
+- chmod/cmd 400 "devtinder-web.pem"
+- ssh -i "devtinder-web.pem" ubuntu@ec2-51-20-82-159.eu-north-1.compute.amazonaws.com 
+- install node version - need install same version which u r use in code
+- fit clone- frontend and backend code
+
 
 
 
