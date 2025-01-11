@@ -25,31 +25,30 @@ const UserCard = ({ user, onRefresh }) => {
   // Handle API request (send or ignore)
   const handleSendRequest = async (status) => {
     try {
-      setIsActionSent(true); // Disable buttons when action is sent
+      setIsActionSent(true);
       const response = await axios.post(
         `${BASE_URL}/request/send/${status}/${_id}`,
         {},
         { withCredentials: true }
       );
-
+  
       if (response.status === 200) {
-        dispatch(removeUserFromFeed(_id)); // Remove user from feed in Redux store
-        toast.success(`Request ${status === "interested" ? "sent" : "ignored"} successfully.`); // Show success toast
-
-        // Trigger browser refresh after action
+        dispatch(removeUserFromFeed(_id));
+        toast.success(`Request ${status === "interested" ? "sent" : "ignored"} successfully.`);
         setTimeout(() => {
-          window.location.reload(); // Refresh the page after 2 seconds
+          window.location.reload();
         }, 2000);
       } else {
         throw new Error("Request failed");
       }
     } catch (err) {
-      console.error("Error sending request:", err);
-      toast.error("Failed to send request. Please try again."); // Show error toast
+      console.error("Error sending request:", err.response ? err.response.data : err.message);
+      toast.error("Failed to send request. Please try again.");
     } finally {
-      setIsActionSent(false); // Re-enable buttons after action is complete
+      setIsActionSent(false);
     }
   };
+  
 
   const handleManualRefresh = () => {
     setIsRefreshing(true); // Start manual refresh
