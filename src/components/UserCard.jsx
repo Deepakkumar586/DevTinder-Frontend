@@ -35,9 +35,9 @@ const UserCard = ({ user, onRefresh }) => {
       if (response.status === 200) {
         dispatch(removeUserFromFeed(_id));
         toast.success(`Request ${status === "interested" ? "sent" : "ignored"} successfully.`);
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
+        // setTimeout(() => {
+        //   window.location.reload();
+        // }, 2000);
       } else {
         throw new Error("Request failed");
       }
