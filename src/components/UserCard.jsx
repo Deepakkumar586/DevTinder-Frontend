@@ -33,8 +33,9 @@ const UserCard = ({ user, onRefresh }) => {
       if (response.status === 200) {
         dispatch(removeUserFromFeed(_id)); // Remove user from feed in Redux store
         toast.success(`Request ${status === "interested" ? "sent" : "ignored"} successfully.`); // Success toast
-        setIsActionSent(true); // Set action state to true
-        onRefresh(); // Trigger refresh to update UI
+        
+        // Trigger full page refresh
+        window.location.reload();
       } else {
         throw new Error("Request failed");
       }
