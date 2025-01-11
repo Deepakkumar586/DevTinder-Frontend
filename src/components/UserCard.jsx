@@ -22,9 +22,10 @@ const UserCard = ({ user, onRefresh }) => {
 
   const { _id, firstName, lastName, photoUrl, about, gender, age, skills } = user;
 
+  // Handle API request (send or ignore)
   const handleSendRequest = async (status) => {
     try {
-      setIsRefreshing(true); // Start refreshing indicator
+      setIsRefreshing(true);
       const response = await axios.post(
         `${BASE_URL}/request/send/${status}/${_id}`,
         {},
@@ -34,10 +35,10 @@ const UserCard = ({ user, onRefresh }) => {
       if (response.status === 200) {
         dispatch(removeUserFromFeed(_id)); // Remove user from feed in Redux store
         toast.success(`Request ${status === "interested" ? "sent" : "ignored"} successfully.`); // Show success toast
-        setIsActionSent(true); // Disable action buttons to avoid duplicate clicks
+        setIsActionSent(true); // Disable action buttons
 
-        // Trigger component re-render or refresh
-        onRefresh(); // Make sure `onRefresh` is passed down correctly from the parent component
+        // Trigger browser refresh
+        window.location.reload();
       } else {
         throw new Error("Request failed");
       }
@@ -51,7 +52,7 @@ const UserCard = ({ user, onRefresh }) => {
 
   const handleManualRefresh = () => {
     setIsRefreshing(true); // Start manual refresh
-    onRefresh(); // Trigger the `onRefresh` to re-fetch or re-render data
+    window.location.reload(); // Trigger browser refresh
     setIsRefreshing(false); // Stop refresh indicator after completion
   };
 
