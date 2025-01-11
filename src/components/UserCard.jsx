@@ -24,6 +24,7 @@ const UserCard = ({ user, onRefresh }) => {
 
   const handleSendRequest = async (status) => {
     try {
+      setIsRefreshing(true); // Start refreshing indicator
       const response = await axios.post(
         `${BASE_URL}/request/send/${status}/${_id}`,
         {},
@@ -32,23 +33,26 @@ const UserCard = ({ user, onRefresh }) => {
 
       if (response.status === 200) {
         dispatch(removeUserFromFeed(_id)); // Remove user from feed in Redux store
-        toast.success(`Request ${status === "interested" ? "sent" : "ignored"} successfully.`); // Success toast
-        
-        // Trigger full page refresh
-        window.location.reload();
+        toast.success(`Request ${status === "interested" ? "sent" : "ignored"} successfully.`); // Show success toast
+        setIsActionSent(true); // Disable action buttons to avoid duplicate clicks
+
+        // Trigger component re-render or refresh
+        onRefresh(); // Make sure `onRefresh` is passed down correctly from the parent component
       } else {
         throw new Error("Request failed");
       }
     } catch (err) {
       console.error("Error sending request:", err);
-      toast.error("Failed to send request. Please try again."); // Error toast
+      toast.error("Failed to send request. Please try again."); // Show error toast
+    } finally {
+      setIsRefreshing(false); // Stop refreshing indicator
     }
   };
 
   const handleManualRefresh = () => {
-    setIsRefreshing(true);
-    onRefresh();
-    setIsRefreshing(false);
+    setIsRefreshing(true); // Start manual refresh
+    onRefresh(); // Trigger the `onRefresh` to re-fetch or re-render data
+    setIsRefreshing(false); // Stop refresh indicator after completion
   };
 
   return (
