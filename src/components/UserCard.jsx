@@ -101,7 +101,7 @@ const UserCard = ({ user, onRefresh }) => {
             onClick={() => handleSendRequest("ignored")}
             whileHover={{ scale: 1.05 }}
           >
-            Ignore
+            Ignores
           </motion.button>
           <motion.button
             className="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg ml-2 transition duration-200"
