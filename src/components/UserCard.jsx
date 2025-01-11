@@ -4,7 +4,7 @@ import { BASE_URL } from "../utils/constants";
 import { useDispatch } from "react-redux";
 import { removeUserFromFeed } from "../utils/feedSlice";
 import toast from "react-hot-toast";
-import { motion } from "framer-motion"; // For animations
+import { motion } from "framer-motion";
 
 const UserCard = ({ user }) => {
   const dispatch = useDispatch();
@@ -21,13 +21,18 @@ const UserCard = ({ user }) => {
 
   const handleSendRequest = async (status, userId) => {
     try {
-      await axios.post(
+      const response = await axios.post(
         `${BASE_URL}/request/send/${status}/${userId}`,
         {},
         { withCredentials: true }
       );
-      dispatch(removeUserFromFeed(userId));  // This removes the user from the feed in Redux
-      toast.success(`Request ${status === "interested" ? "sent" : "ignored"} successfully.`);
+      
+      if (response.status === 200) {
+        dispatch(removeUserFromFeed(userId));
+        toast.success(`Request ${status === "interested" ? "sent" : "ignored"} successfully.`);
+      } else {
+        throw new Error("Unexpected response");
+      }
     } catch (err) {
       console.error("Error sending request:", err);
       toast.error("Failed to send request. Please try again.");
@@ -79,6 +84,7 @@ const UserCard = ({ user }) => {
 
         <div className="flex justify-between items-center mt-6">
           <motion.button
+            type="button"
             className="w-1/2 bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-lg mr-2 transition duration-200"
             onClick={() => handleSendRequest("ignored", _id)}
             whileHover={{ scale: 1.05 }}
@@ -86,6 +92,7 @@ const UserCard = ({ user }) => {
             Ignore
           </motion.button>
           <motion.button
+            type="button"
             className="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg ml-2 transition duration-200"
             onClick={() => handleSendRequest("interested", _id)}
             whileHover={{ scale: 1.05 }}

@@ -68,3 +68,11 @@ Route/profile => Profile
       and then restart the nginx - sudo systemctl restart nginx
 
      -  modify the base url in frontend Projet to /api
+
+
+# AWS_SES
+   - create IAM user
+   - Give Access to AmazonSESfullAccess
+   - amazon ses create an identity
+   - verify email
+   - install aws sdk - v3
