@@ -5,34 +5,45 @@ import { useDispatch } from "react-redux";
 import { removeUserFromFeed } from "../utils/feedSlice";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
+import { FaSyncAlt } from "react-icons/fa"; // For refresh icon
 
-const UserCard = ({ user }) => {
-  const [isVisible, setIsVisible] = useState(true); // Controls visibility of the card
+const UserCard = ({ user, onRefresh }) => {
   const dispatch = useDispatch();
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  if (!user || !isVisible) return null;
+  if (!user) {
+    return (
+      <div className="bg-gray-800 text-white text-center p-4 rounded-lg">
+        User data is not available.
+      </div>
+    );
+  }
 
   const { _id, firstName, lastName, photoUrl, about, gender, age, skills } = user;
 
-  const handleSendRequest = async (status, userId) => {
+  const handleSendRequest = async (status) => {
     try {
-      const response = await axios.post(
-        `${BASE_URL}/request/send/${status}/${userId}`,
+      await axios.post(
+        `${BASE_URL}/request/send/${status}/${_id}`,
         {},
         { withCredentials: true }
       );
 
-      if (response.status === 200) {
-        setIsVisible(false); // Hide card after successful request
-        dispatch(removeUserFromFeed(userId));
-        toast.success(`Request ${status === "interested" ? "sent" : "ignored"} successfully.`);
-      } else {
-        throw new Error("Unexpected response");
-      }
+      dispatch(removeUserFromFeed(_id)); // Remove user from feed in Redux store
+      toast.success(`Request ${status === "interested" ? "sent" : "ignored"} successfully.`);
+      
+      // Trigger refresh after action
+      onRefresh();
     } catch (err) {
       console.error("Error sending request:", err);
       toast.error("Failed to send request. Please try again.");
     }
+  };
+
+  const handleManualRefresh = () => {
+    setIsRefreshing(true);
+    onRefresh();
+    setIsRefreshing(false);
   };
 
   return (
@@ -53,6 +64,12 @@ const UserCard = ({ user }) => {
             <span className="font-semibold">{gender}</span> | <span>Age: {age}</span>
           </div>
         )}
+        <button
+          onClick={handleManualRefresh}
+          className="absolute top-2 right-2 p-1 bg-gray-700 text-white rounded-full shadow-md hover:bg-gray-800"
+        >
+          <FaSyncAlt className={isRefreshing ? "animate-spin" : ""} />
+        </button>
       </div>
 
       <div className="p-6">
@@ -80,17 +97,15 @@ const UserCard = ({ user }) => {
 
         <div className="flex justify-between items-center mt-6">
           <motion.button
-            type="button"
             className="w-1/2 bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-lg mr-2 transition duration-200"
-            onClick={() => handleSendRequest("ignored", _id)}
+            onClick={() => handleSendRequest("ignored")}
             whileHover={{ scale: 1.05 }}
           >
             Ignore
           </motion.button>
           <motion.button
-            type="button"
             className="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg ml-2 transition duration-200"
-            onClick={() => handleSendRequest("interested", _id)}
+            onClick={() => handleSendRequest("interested")}
             whileHover={{ scale: 1.05 }}
           >
             Interested
