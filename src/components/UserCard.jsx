@@ -10,6 +10,7 @@ import { FaSyncAlt } from "react-icons/fa"; // For refresh icon
 const UserCard = ({ user, onRefresh }) => {
   const dispatch = useDispatch();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isActionSent, setIsActionSent] = useState(false); // Track action state
 
   if (!user) {
     return (
@@ -23,20 +24,23 @@ const UserCard = ({ user, onRefresh }) => {
 
   const handleSendRequest = async (status) => {
     try {
-      await axios.post(
+      const response = await axios.post(
         `${BASE_URL}/request/send/${status}/${_id}`,
         {},
         { withCredentials: true }
       );
 
-      dispatch(removeUserFromFeed(_id)); // Remove user from feed in Redux store
-      toast.success(`Request ${status === "interested" ? "sent" : "ignored"} successfully.`);
-      
-      // Trigger refresh after action
-      onRefresh();
+      if (response.status === 200) {
+        dispatch(removeUserFromFeed(_id)); // Remove user from feed in Redux store
+        toast.success(`Request ${status === "interested" ? "sent" : "ignored"} successfully.`); // Success toast
+        setIsActionSent(true); // Set action state to true
+        onRefresh(); // Trigger refresh to update UI
+      } else {
+        throw new Error("Request failed");
+      }
     } catch (err) {
       console.error("Error sending request:", err);
-      toast.error("Failed to send request. Please try again.");
+      toast.error("Failed to send request. Please try again."); // Error toast
     }
   };
 
@@ -100,13 +104,15 @@ const UserCard = ({ user, onRefresh }) => {
             className="w-1/2 bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-lg mr-2 transition duration-200"
             onClick={() => handleSendRequest("ignored")}
             whileHover={{ scale: 1.05 }}
+            disabled={isActionSent} // Disable button after action
           >
-            Ignores
+            Ignore
           </motion.button>
           <motion.button
             className="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg ml-2 transition duration-200"
             onClick={() => handleSendRequest("interested")}
             whileHover={{ scale: 1.05 }}
+            disabled={isActionSent} // Disable button after action
           >
             Interested
           </motion.button>
