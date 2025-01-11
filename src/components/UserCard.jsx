@@ -1,5 +1,5 @@
 import axios from "axios";
-import React from "react";
+import React, { useState } from "react";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch } from "react-redux";
 import { removeUserFromFeed } from "../utils/feedSlice";
@@ -7,15 +7,10 @@ import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 
 const UserCard = ({ user }) => {
+  const [isVisible, setIsVisible] = useState(true); // Controls visibility of the card
   const dispatch = useDispatch();
 
-  if (!user) {
-    return (
-      <div className="bg-gray-800 text-white text-center p-4 rounded-lg">
-        User data is not available.
-      </div>
-    );
-  }
+  if (!user || !isVisible) return null;
 
   const { _id, firstName, lastName, photoUrl, about, gender, age, skills } = user;
 
@@ -26,8 +21,9 @@ const UserCard = ({ user }) => {
         {},
         { withCredentials: true }
       );
-      
+
       if (response.status === 200) {
+        setIsVisible(false); // Hide card after successful request
         dispatch(removeUserFromFeed(userId));
         toast.success(`Request ${status === "interested" ? "sent" : "ignored"} successfully.`);
       } else {
