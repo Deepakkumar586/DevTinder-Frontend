@@ -1,5 +1,5 @@
 import axios from "axios";
-import React from "react";
+// import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../utils/constants";
@@ -120,6 +120,12 @@ const Navbar = () => {
                   <Link to="/profile" className="flex items-center gap-2">
                     <i className="fas fa-user-circle"></i>{" "}
                     <p className="font-bold">Profile</p>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/premium" className="flex items-center gap-2">
+                    <i className="fas fa-user-friends"></i>{" "}
+                    <p className="font-bold">Premium</p>
                   </Link>
                 </li>
                 <li>

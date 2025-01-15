@@ -76,3 +76,20 @@ Route/profile => Profile
    - amazon ses create an identity
    - verify email
    - install aws sdk - v3
+
+
+# Razorpay Payment Gateway Interation 
+    - ref https://razorpay.com/docs/payments/server-integration/nodejs/integration-steps/#integrate-with-razorpay-payment-gateway
+    - ref https://razorpay.com/docs/webhooks/validate-test/  --- for webhooks
+    - ref https://razorpay.com/docs/webhooks/payloads/payments/ --- for check payment sample after successful payment or failed payment
+    - sign up on Razorpay & complete
+    - created a UI  for premium and silver or gold
+    - creating  an API for create order in Backend
+    - added my key and secret in env file
+    - initialized Razorpay in utils
+    - creating order on Razzorpay
+    -  create schema and model
+    - saved the order in pyamnets collection
+    - make APi dynamic
+    - setup razorpay webhook 
+    

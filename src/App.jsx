@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import the ProtectedRoute component
 import NotFound from "./components/NotFound"; // Import the NotFound component
 import Navbar from "./components/Navbar"; // Import Navbar to be visible always
+import Premium from "./components/Premium";
 
 function App() {
   const user = useSelector((state) => state.user);
@@ -49,6 +50,10 @@ function App() {
                 <Route
                   path="/profile"
                   element={<ProtectedRoute element={<Profile />} />}
+                />
+                <Route
+                  path="/premium"
+                  element={<ProtectedRoute element={<Premium />} />}
                 />
                 <Route
                   path="/connections"
