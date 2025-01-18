@@ -4,6 +4,7 @@ import axios from "axios";
 import { setConnection } from "../utils/connectionSlice";
 import { SetRequest } from "../utils/requestsSlice";
 import { BASE_URL } from "../utils/constants";
+import { SiTicktick } from "react-icons/si";
 
 // Skeleton Loader Component
 const SkeletonLoader = ({ width, height }) => {
@@ -76,9 +77,14 @@ const FeedProfile = () => {
             </>
           ) : (
             <>
-              <h1 className="text-2xl font-bold">
+              <h1 className="text-2xl font-bold flex items-center">
                 {user?.firstName || "First Name"}{" "}
-                {user?.lastName || "Last Name"}
+                {user?.lastName || "Last Name"}{" "}
+                {user.membershipType === "gold" ? (
+                  <span className="text-blue-600 ml-1 mt-4 ">
+                    <SiTicktick size={13} />
+                  </span>
+                ) : null}
               </h1>
               <p className="text-sm text-gray-400">
                 {user?.emailId || "Email Address"}

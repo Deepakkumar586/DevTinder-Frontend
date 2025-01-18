@@ -91,5 +91,29 @@ Route/profile => Profile
     -  create schema and model
     - saved the order in pyamnets collection
     - make APi dynamic
-    - setup razorpay webhook 
+    - setup razorpay webhook  on your Live APi
+
+#  Real Time Chat using Websocket
+   -  build the UI for Chat window on Your Route like this /chat/:targetUserId
+   - setUp socket.io in Backend
+   - npm i socket.io
+   - in frontend install  : npm i socket.io-client
+   - initialies the chat
+   - create Socket Connection
+   - listen to events
+
+
+
+# TODO:   which are implemented in our website   
+   - TODO : improve Ui
+   - TODO : Add Featuer if I'm not friends then I should not be able to send message
+   - TODO : Add Feature for blueTick
+   - TODO : Add Fature for Typing- show typing To user
+   - TODO : Add message Limit
+   - TODO : if user have not premium then i should bot be able to send message (sender should have a premium and recevier should have a premium then we able to send message)
+   - TODO : Add emoji options in chat
+   - TODO : if user have a premium then premium card should not be show ( show another message)
+
+
+
     

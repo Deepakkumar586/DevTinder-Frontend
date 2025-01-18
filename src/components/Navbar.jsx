@@ -62,11 +62,11 @@ const Navbar = () => {
         <Link className="text-2xl font-bold flex items-center text-white">
           {/* Tinder Icon */}
           <img
-            src="https://avatars.githubusercontent.com/u/10427184?s=280&v=4"
+            src="https://i.pinimg.com/60x60/e8/c6/21/e8c6214faaff002da5b06a5e6133a57e.jpg"
             alt="Tinder Icon"
-            className="w-8 h-8 mr-2 rounded-lg"
+            className="w-8 h-8 mr-2 rounded-[50%]"
           />
-          DevTinder
+          SocailSparks
         </Link>
 
         {/* Feed Button or Login Button */}

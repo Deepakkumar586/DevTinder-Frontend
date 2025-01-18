@@ -4,27 +4,102 @@
 
 /* Ensure no horizontal scrolling */
 body {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    overflow-x: hidden;
-    overflow-y: hidden; /* Prevent horizontal scrolling */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  /* Prevent horizontal scrolling */
+}
+
+html {
+  width: 100%;
+  overflow-x: hidden;
+  /* overflow-y: hidden; */
+  /* Ensure no overflow issues on root */
+}
+
+/* Tailwind-safe fix for full responsiveness */
+* {
+  box-sizing: inherit;
+}
+
+/* Optional: Add smooth scrolling for a better experience */
+html {
+  scroll-behavior: smooth;
+}
+
+
+/* for chat */
+/* TailwindCSS styles can be used for the layout and styling */
+.chat-start {
+  align-items: flex-start;
+}
+
+.chat-end {
+  align-items: flex-end;
+}
+
+.chat-bubble {
+  max-width: 60%;
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+.chat-header {
+  font-weight: bold;
+}
+
+.chat-footer {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Add this to your global styles or within the component's CSS file */
+@keyframes typing {
+  0% {
+    content: ".";
   }
-  
-  html {
-    width: 100%;
-    overflow-x: hidden; 
-    /* overflow-y: hidden; */
-    /* Ensure no overflow issues on root */
+  33% {
+    content: "..";
   }
-  
-  /* Tailwind-safe fix for full responsiveness */
-  * {
-    box-sizing: inherit;
+  66% {
+    content: "...";
   }
-  
-  /* Optional: Add smooth scrolling for a better experience */
-  html {
-    scroll-behavior: smooth;
+  100% {
+    content: ".";
   }
-  
+}
+
+.typing-animation::after {
+  content: ".";
+  animation: typing 1.5s steps(4, end) infinite;
+}
+
+
+
+@keyframes borderColorAnimation {
+  0% {
+    border-color: #3b82f6;
+  }
+
+  50% {
+    border-color: #1e40af;
+  }
+
+  100% {
+    border-color: #3b82f6;
+  }
+}
+
+.border-gradient-blue {
+  border-image: linear-gradient(90deg, #3b82f6, #1e40af) 1;
+}
+
+.border-gradient-yellow {
+  border-image: linear-gradient(90deg, #fbbf24, #f59e0b) 1;
+}
+
+.border-gradient-active {
+  animation: borderColorAnimation 3s infinite;
+}

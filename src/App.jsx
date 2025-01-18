@@ -14,6 +14,8 @@ import ProtectedRoute from "./components/ProtectedRoute"; // Import the Protecte
 import NotFound from "./components/NotFound"; // Import the NotFound component
 import Navbar from "./components/Navbar"; // Import Navbar to be visible always
 import Premium from "./components/Premium";
+import Chat from "./components/Chat";
+import NotPremiumPage from "./components/NotPremiumPage";
 
 function App() {
   const user = useSelector((state) => state.user);
@@ -58,6 +60,14 @@ function App() {
                 <Route
                   path="/connections"
                   element={<ProtectedRoute element={<Connections />} />}
+                />
+                <Route
+                  path="/not-premium/:connectionId"
+                  element={<NotPremiumPage />}
+                />
+                <Route
+                  path="/chat/:targetUserId"
+                  element={<ProtectedRoute element={<Chat />} />}
                 />
               </>
             )}
