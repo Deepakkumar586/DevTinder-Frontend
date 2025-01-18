@@ -137,7 +137,7 @@ const EditProfile = ({ user }) => {
           {/* Skills */}
           <div>
             <label className="block text-sm font-medium tex-white mb-1">
-              Skills *
+              Skills * <span className="text-red-500">Should be 5 Skills</span>
             </label>
             <div className="flex items-center gap-2 flex-wrap">
               {skills.map((skill, index) => (
@@ -162,7 +162,7 @@ const EditProfile = ({ user }) => {
               value={currentSkill}
               onChange={(e) => setCurrentSkill(e.target.value)}
               onKeyDown={handleAddSkill}
-              placeholder="Type a skill and press Enter"
+              placeholder="Type a 5 skill and press Enter"
               className="w-full mt-2 px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-indigo-500"
             />
           </div>
