@@ -16,10 +16,31 @@ import Navbar from "./components/Navbar"; // Import Navbar to be visible always
 import Premium from "./components/Premium";
 import Chat from "./components/Chat";
 import NotPremiumPage from "./components/NotPremiumPage";
+import toast from "react-hot-toast";
 
 function App() {
   const user = useSelector((state) => state.user);
   const login = window.localStorage.getItem("isLoggedIn");
+
+  const checkLoginStatus = () => {
+    const isLoggedIn = window.localStorage.getItem("isLoggedIn");
+    const loginTime = window.localStorage.getItem("loginTime");
+
+    if (isLoggedIn && loginTime) {
+      const currentTime = new Date().getTime();
+      const timeElapsed = currentTime - loginTime;
+      const expiryTime = 1 * 24 * 60 * 60 * 1000;
+
+      if (timeElapsed > expiryTime) {
+        // If more than 4 days have passed, remove the login data
+        window.localStorage.removeItem("isLoggedIn");
+        window.localStorage.removeItem("loginTime");
+        toast.error("Session expired. Please login again.");
+      }
+    }
+  };
+
+  checkLoginStatus();
 
   return (
     <>

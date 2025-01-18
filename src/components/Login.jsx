@@ -57,7 +57,10 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true); // Set loading to true when the form is submitted
-    window.localStorage.setItem('isLoggedIn',true)
+    const currentTime = new Date().getTime();
+    // Set isLoggedIn and store timestamp (in ms)
+    window.localStorage.setItem('isLoggedIn', true);
+    window.localStorage.setItem('loginTime', currentTime);
     try {
       const endpoint = isLogInForm ? "/login" : "/signup";
       const payload = isLogInForm

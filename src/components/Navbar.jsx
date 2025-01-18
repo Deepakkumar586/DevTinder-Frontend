@@ -14,7 +14,9 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    window.localStorage.removeItem("isLoggedIn");
+    window.localStorage.removeItem('isLoggedIn');
+  window.localStorage.removeItem('loginTime');
+ 
     try {
       await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
       dispatch(removeUser());
