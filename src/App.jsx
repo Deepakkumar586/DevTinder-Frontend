@@ -29,7 +29,7 @@ function App() {
     if (isLoggedIn && loginTime) {
       const currentTime = new Date().getTime();
       const timeElapsed = currentTime - loginTime;
-      const expiryTime = 1 * 24 * 60 * 60 * 1000;
+      const expiryTime = 10 * 60 * 1000;
 
       if (timeElapsed > expiryTime) {
         // If more than 4 days have passed, remove the login data
