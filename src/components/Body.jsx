@@ -10,7 +10,7 @@ import { Toaster } from "react-hot-toast";
 
 const Body = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
   const fetchUser = async () => {

@@ -9,6 +9,12 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import NotPremium from "./NotPremium";
 
+const Spinner = () => (
+  <div className="flex justify-center mt-64 items-center h-full">
+    <div className="loader text-white text-2xl">Loading...</div>
+  </div>
+);
+
 const Chat = () => {
   const MESSAGE_LIMIT = 100;
   const { targetUserId } = useParams();
@@ -27,6 +33,11 @@ const Chat = () => {
   const typingTimeoutRef = useRef(null);
   const messageEndRef = useRef(null);
   const [isFriend, setIsFriend] = useState(false);
+  const [loading, setLoading] = useState({
+    chat: false,
+    userInfo: false,
+    connectionStatus: false,
+  });
 
   const formatTime = (timestamp) => {
     if (!timestamp || isNaN(new Date(timestamp).getTime())) {
@@ -40,6 +51,7 @@ const Chat = () => {
   };
 
   const fetchChat = async () => {
+    setLoading((prev) => ({ ...prev, chat: true }));
     try {
       const response = await axios.get(`${BASE_URL}/chat/${targetUserId}`, {
         withCredentials: true,
@@ -54,10 +66,13 @@ const Chat = () => {
       setMessages(chats);
     } catch (error) {
       console.error("Error fetching chat:", error);
+    } finally {
+      setLoading((prev) => ({ ...prev, chat: false }));
     }
   };
 
   const fetchTargetUserInfo = async () => {
+    setLoading((prev) => ({ ...prev, userInfo: true }));
     try {
       const response = await axios.get(`${BASE_URL}/user/${targetUserId}`, {
         withCredentials: true,
@@ -66,10 +81,13 @@ const Chat = () => {
       setUserInfo(response.data);
     } catch (error) {
       console.error("Error fetching target user info:", error);
+    } finally {
+      setLoading((prev) => ({ ...prev, userInfo: false }));
     }
   };
 
   const fetchConnectionStatus = async () => {
+    setLoading((prev) => ({ ...prev, connectionStatus: true }));
     try {
       const response = await axios.get(
         `${BASE_URL}/user/connections/${targetUserId}`,
@@ -83,6 +101,8 @@ const Chat = () => {
     } catch (error) {
       console.error("Error fetching connection status:", error.message);
       toast.error("Failed to fetch connection status.");
+    } finally {
+      setLoading((prev) => ({ ...prev, connectionStatus: false }));
     }
   };
 
@@ -166,11 +186,10 @@ const Chat = () => {
       socket.emit("typing", false);
     }
   };
-  
 
   if (messages.length >= MESSAGE_LIMIT) {
     return (
-      <div className="mt-20 w-full max-w-4xl mx-auto border border-gray-300 rounded-lg shadow-lg h-[80vh] flex items-center justify-center bg-gray-800">
+      <div className="mt-20  w-full max-w-4xl mx-auto border border-gray-300 mb-20 rounded-lg shadow-lg h-[80vh] flex items-center justify-center bg-gray-800">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-500">
             Message Limit Reached!
@@ -192,126 +211,129 @@ const Chat = () => {
 
   return (
     <>
-    {
-      userInfo?.data?.isPremium ? (
-        <div className="mt-20 w-full max-w-4xl mx-auto border border-gray-300 rounded-lg shadow-lg h-[80vh] flex flex-col bg-gray-800">
-      
-        <div className="flex items-center p-4 bg-gray-700">
-          <img
-            src={userInfo.data.photoUrl}
-            alt={userInfo.data.firstName}
-            className="w-10 h-10 rounded-full mr-4"
-          />
-          <div>
-            <h2 className="text-white text-lg font-bold">
-              {userInfo.data.firstName + " " + userInfo.data.lastName}
-            </h2>
-            <p>{userInfo.data.about}</p>
-          </div>
-        </div>
-      
-
-      {isFriend ? (
-        <>
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((message) => {
-              const isUserMessage = user.firstName === message.firstName;
-              return (
-                <motion.div
-                  key={message._id}
-                  className={`chat ${
-                    isUserMessage ? "chat-end" : "chat-start"
-                  } ${isUserMessage ? "text-right" : "text-left"}`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <p className="font-semibold">{message.firstName}</p>
-                  <div className="chat-header"></div>
-                  <div className={`chat-bubble ${color} text-white`}>
-                    <div>{message.text}</div>
-                  </div>
-                  <div>
-                    <time className=" text-gray-400 text-sm font-serif">
-                      {formatTime(message.createdAt)}
-                    </time>
-                  </div>
-                </motion.div>
-              );
-            })}
-            {(typingStatus.sender || typingStatus.receiver) && (
-              <div className="chat chat-start">
-                <div className="chat-bubble text-white bg-green-700 typing-animation">
-                  Typing...
-                </div>
-              </div>
-            )}
-            <div ref={messageEndRef}></div>
-          </div>
-
-          <div className="p-4 border-t border-gray-300 flex items-center space-x-2">
-            <input
-              value={newMessage}
-              onChange={handleTyping}
-              className="flex-1 border border-gray-500 rounded-lg p-2 text-white bg-gray-700 focus:outline-none"
-              placeholder="Type a message..."
+      {loading.chat || loading.userInfo || loading.connectionStatus ? (
+        <Spinner />
+      ) : userInfo?.data?.isPremium ? (
+        <div className="mt-20  mb-20 w-full max-w-4xl mx-auto border border-gray-300 rounded-lg shadow-lg h-[80vh] flex flex-col bg-gray-800">
+          <div className="flex items-center p-4 bg-gray-700">
+            <img
+              src={userInfo.data.photoUrl}
+              alt={userInfo.data.firstName}
+              className="w-10 h-10 rounded-full mr-4"
             />
-            <button
-              onClick={() => setEmojiPickerVisible(!emojiPickerVisible)}
-              className="p-2 rounded-full bg-gray-600 hover:bg-gray-500 text-white"
-            >
-              😊
-            </button>
-            {emojiPickerVisible && (
-              <Picker
-                onEmojiClick={(emoji) =>
-                  setNewMessage((prev) => prev + emoji.emoji)
-                }
-              />
-            )}
-            <button
-              onClick={sendMessage}
-              className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-            >
-              Send
-            </button>
+            <div>
+              <h2 className="text-white text-lg font-bold">
+                {userInfo.data.firstName + " " + userInfo.data.lastName}
+              </h2>
+              <p>{userInfo.data.about}</p>
+            </div>
           </div>
 
-          <div className="p-4 flex space-x-2">
-            {[
-              "bg-blue-500",
-              "bg-green-500",
-              "bg-red-500",
-              "bg-purple-500",
-              "bg-pink-500",
-            ].map((colorOption) => (
-              <button
-                key={colorOption}
-                onClick={() => setColor(colorOption)}
-                className={`${colorOption} w-8 h-8 rounded-full border-2 border-white shadow-md hover:scale-110 transition-transform`}
-              ></button>
-            ))}
-          </div>
-        </>
-      ) : (
-        <div className=" w-3/4 flex flex-col ml-10  justify-center mt-3  font-serif  text-center text-white text-lg font-semibold p-4 rounded-xl shadow-xl bg-gradient-to-r from-gray-600 to-gray-800 space-y-4">
-          <p>🚫 Oops! You can’t chat with this user yet.</p>
-          <p>
-            💬 Chat is unlocked once you’re friends! Send a request and start
-            the convo.
-          </p>
-          <p>😄 "No friendship, no chat. It's like pizza without cheese!"</p>
-          <p>
-            🌈 Meanwhile, feel free to send a message to someone else or just
-            chill and vibe! ✌️
-          </p>
+          {isFriend ? (
+            <>
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {messages.map((message) => {
+                  const isUserMessage = user.firstName === message.firstName;
+                  return (
+                    <motion.div
+                      key={message._id}
+                      className={`chat ${
+                        isUserMessage ? "chat-end" : "chat-start"
+                      } ${isUserMessage ? "text-right" : "text-left"}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <p className="font-semibold">{message.firstName}</p>
+                      <div className="chat-header"></div>
+                      <div className={`chat-bubble ${color} text-white`}>
+                        <div>{message.text}</div>
+                      </div>
+                      <div>
+                        <time className=" text-gray-400 text-sm font-serif">
+                          {formatTime(message.createdAt)}
+                        </time>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+                {(typingStatus.sender || typingStatus.receiver) && (
+                  <div className="chat chat-start">
+                    <div className="chat-bubble text-white bg-green-700 typing-animation">
+                      Typing...
+                    </div>
+                  </div>
+                )}
+                <div ref={messageEndRef}></div>
+              </div>
+
+              <div className="p-4 border-t border-gray-300 flex items-center space-x-2">
+                <input
+                  value={newMessage}
+                  onChange={handleTyping}
+                  className="flex-1 border border-gray-500 rounded-lg p-2 text-white bg-gray-700 focus:outline-none"
+                  placeholder="Type a message..."
+                />
+                <button
+                  onClick={() => setEmojiPickerVisible(!emojiPickerVisible)}
+                  className="p-2 rounded-full bg-gray-600 hover:bg-gray-500 text-white"
+                >
+                  😊
+                </button>
+                {emojiPickerVisible && (
+                  <Picker
+                    onEmojiClick={(emoji) =>
+                      setNewMessage((prev) => prev + emoji.emoji)
+                    }
+                  />
+                )}
+                <button
+                  onClick={sendMessage}
+                  className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                >
+                  Send
+                </button>
+              </div>
+
+              <div className="p-4 flex space-x-2">
+                {[
+                  "bg-blue-500",
+                  "bg-green-500",
+                  "bg-red-500",
+                  "bg-purple-500",
+                  "bg-pink-500",
+                ].map((colorOption) => (
+                  <button
+                    key={colorOption}
+                    onClick={() => setColor(colorOption)}
+                    className={`${colorOption} w-8 h-8 rounded-full border-2 border-white shadow-md hover:scale-110 transition-transform`}
+                  ></button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className=" w-3/4 flex flex-col ml-10  justify-center mt-3  font-serif  text-center text-white text-lg font-semibold p-4 rounded-xl shadow-xl bg-gradient-to-r from-gray-600 to-gray-800 space-y-4">
+              <p>🚫 Oops! You can’t chat with this user yet.</p>
+              <p>
+                💬 Chat is unlocked once you’re friends! Send a request and
+                start the convo.
+              </p>
+              <p>
+                😄 "No friendship, no chat. It's like pizza without cheese!"
+              </p>
+              <p>
+                🌈 Meanwhile, feel free to send a message to someone else or
+                just chill and vibe! ✌️
+              </p>
+            </div>
+          )}
         </div>
-      )}
-    </div>
       ) : (
-        <NotPremium firstName={userInfo?.data?.firstName} lastName={userInfo?.data?.lastName} />
-      )
-    }
+        <NotPremium
+          firstName={userInfo?.data?.firstName}
+          lastName={userInfo?.data?.lastName}
+        />
+      )}
     </>
   );
 };
