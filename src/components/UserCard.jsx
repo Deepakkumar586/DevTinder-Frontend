@@ -1,13 +1,14 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { BASE_URL } from "../utils/constants";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { removeUserFromFeed } from "../utils/feedSlice";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { FaSyncAlt } from "react-icons/fa"; // For refresh icon
 
 const UserCard = ({ user, onRefresh }) => {
+  const loginUser = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isActionSent, setIsActionSent] = useState(false); // Track action state
@@ -20,7 +21,8 @@ const UserCard = ({ user, onRefresh }) => {
     );
   }
 
-  const { _id, firstName, lastName, photoUrl, about, gender, age, skills } = user;
+  const { _id, firstName, lastName, photoUrl, about, gender, age, skills } =
+    user;
 
   // Handle API request (send or ignore)
   const handleSendRequest = async (status) => {
@@ -31,10 +33,14 @@ const UserCard = ({ user, onRefresh }) => {
         {},
         { withCredentials: true }
       );
-  
+
       if (response.status === 200) {
         dispatch(removeUserFromFeed(_id));
-        toast.success(`Request ${status === "interested" ? "sent" : "ignored"} successfully.`);
+        toast.success(
+          `Request ${
+            status === "interested" ? "sent" : "ignored"
+          } successfully.`
+        );
         // setTimeout(() => {
         //   window.location.reload();
         // }, 2000);
@@ -42,13 +48,15 @@ const UserCard = ({ user, onRefresh }) => {
         throw new Error("Request failed");
       }
     } catch (err) {
-      console.error("Error sending request:", err.response ? err.response.data : err.message);
+      console.error(
+        "Error sending request:",
+        err.response ? err.response.data : err.message
+      );
       toast.error("Failed to send request. Please try again.");
     } finally {
       setIsActionSent(false);
     }
   };
-  
 
   const handleManualRefresh = () => {
     setIsRefreshing(true); // Start manual refresh
@@ -71,7 +79,8 @@ const UserCard = ({ user, onRefresh }) => {
         />
         {gender && age && (
           <div className="absolute bottom-2 left-2 bg-black bg-opacity-70 text-gray-200 px-3 py-1 text-sm rounded-md">
-            <span className="font-semibold">{gender}</span> | <span>Age: {age}</span>
+            <span className="font-semibold">{gender}</span> |{" "}
+            <span>Age: {age}</span>
           </div>
         )}
         <button
@@ -83,14 +92,18 @@ const UserCard = ({ user, onRefresh }) => {
       </div>
 
       <div className="p-6">
-        <h2 className="text-2xl font-bold text-white mb-2">{firstName} {lastName}</h2>
+        <h2 className="text-2xl font-bold text-white mb-2">
+          {firstName} {lastName}
+        </h2>
         <p className="text-gray-400 text-sm mb-4">
           {about || "This user hasn't provided any details yet."}
         </p>
 
         {skills && skills.length > 0 && (
           <div className="mb-4">
-            <h3 className="text-sm font-semibold text-gray-300 mb-2">Skills:</h3>
+            <h3 className="text-sm font-semibold text-gray-300 mb-2">
+              Skills:
+            </h3>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
               {skills.map((skill, index) => (
                 <span
@@ -105,24 +118,29 @@ const UserCard = ({ user, onRefresh }) => {
           </div>
         )}
 
-        <div className="flex justify-between items-center mt-6">
-          <motion.button
-            className="w-1/2 bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-lg mr-2 transition duration-200"
-            onClick={() => handleSendRequest("ignored")}
-            whileHover={{ scale: 1.05 }}
-            disabled={isActionSent} // Disable button after action
-          >
-            Ignore
-          </motion.button>
-          <motion.button
-            className="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg ml-2 transition duration-200"
-            onClick={() => handleSendRequest("interested")}
-            whileHover={{ scale: 1.05 }}
-            disabled={isActionSent} // Disable button after action
-          >
-            Interested
-          </motion.button>
-        </div>
+        {loginUser.firstName === firstName &&
+        loginUser.lastName === lastName ? (
+          ""
+        ) : (
+          <div className="flex justify-between items-center mt-6">
+            <motion.button
+              className="w-1/2 bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-lg mr-2 transition duration-200"
+              onClick={() => handleSendRequest("ignored")}
+              whileHover={{ scale: 1.05 }}
+              disabled={isActionSent} // Disable button after action
+            >
+              Ignore
+            </motion.button>
+            <motion.button
+              className="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg ml-2 transition duration-200"
+              onClick={() => handleSendRequest("interested")}
+              whileHover={{ scale: 1.05 }}
+              disabled={isActionSent} // Disable button after action
+            >
+              Interested
+            </motion.button>
+          </div>
+        )}
       </div>
     </motion.div>
   );
