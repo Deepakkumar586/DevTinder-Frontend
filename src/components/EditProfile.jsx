@@ -17,13 +17,10 @@ const EditProfile = ({ user }) => {
   const [skills, setSkills] = useState(user.skills || []);
   const [currentSkill, setCurrentSkill] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [wordCount, setWordCount] = useState(
-    about ? about.split(" ").length : 0
-  );
+  const [wordCount, setWordCount] = useState(about ? about.split(" ").length : 0);
 
   useEffect(() => {
-    // Simulating an API delay for skeleton loader
-    setTimeout(() => setIsLoading(false), 1000);
+    setTimeout(() => setIsLoading(false), 1000); // Simulating API delay for skeleton loader
   }, []);
 
   const handleAddSkill = (e) => {
@@ -34,6 +31,13 @@ const EditProfile = ({ user }) => {
       }
       setCurrentSkill("");
     }
+  };
+
+  const handleAddSkillButton = () => {
+    if (currentSkill.trim() && !skills.includes(currentSkill.trim())) {
+      setSkills([...skills, currentSkill.trim()]);
+    }
+    setCurrentSkill("");
   };
 
   const handleRemoveSkill = (skillToRemove) => {
@@ -82,16 +86,14 @@ const EditProfile = ({ user }) => {
   return (
     <div className="flex flex-col lg:flex-row items-center gap-10 justify-center mt-14 m-4 px-4 lg:px-8 py-4 overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
-
-      {/* Edit Form Section */}
       <div className="bg-base-300 shadow-lg rounded-lg p-6 w-full max-w-lg">
-        <h2 className="text-2xl font-bold text-center  mb-4 text-indigo-600">
+        <h2 className="text-2xl font-bold text-center mb-4 text-indigo-600">
           Edit Profile
         </h2>
         <form className="space-y-2" onSubmit={saveProfile}>
           {/* Photo URL */}
           <div>
-            <label className="block text-sm font-medium tex-white mb-1">
+            <label className="block text-sm font-medium text-white mb-1">
               Photo URL *
             </label>
             <input
@@ -106,7 +108,7 @@ const EditProfile = ({ user }) => {
           {/* Age & Gender */}
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="w-full">
-              <label className="block text-sm font-medium tex-white mb-1">
+              <label className="block text-sm font-medium text-white mb-1">
                 Age *
               </label>
               <input
@@ -119,7 +121,7 @@ const EditProfile = ({ user }) => {
               />
             </div>
             <div className="w-full">
-              <label className="block text-sm font-medium tex-white mb-1">
+              <label className="block text-sm font-medium text-white mb-1">
                 Gender *
               </label>
               <select
@@ -136,7 +138,7 @@ const EditProfile = ({ user }) => {
 
           {/* Skills */}
           <div>
-            <label className="block text-sm font-medium tex-white mb-1">
+            <label className="block text-sm font-medium text-white mb-1">
               Skills * <span className="text-red-500">Should be 5 Skills</span>
             </label>
             <div className="flex items-center gap-2 flex-wrap">
@@ -156,20 +158,28 @@ const EditProfile = ({ user }) => {
                 </span>
               ))}
             </div>
-
-            <input
-              type="text"
-              value={currentSkill}
-              onChange={(e) => setCurrentSkill(e.target.value)}
-              onKeyDown={handleAddSkill}
-              placeholder="Type a 5 skill and press Enter"
-              className="w-full mt-2 px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-            />
+            <div className="flex gap-2 mt-2">
+              <input
+                type="text"
+                value={currentSkill}
+                onChange={(e) => setCurrentSkill(e.target.value)}
+                onKeyDown={handleAddSkill}
+                placeholder="Type a skill"
+                className="w-full px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+              />
+              <button
+                type="button"
+                onClick={handleAddSkillButton}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg"
+              >
+                Add Skill
+              </button>
+            </div>
           </div>
 
           {/* About */}
           <div>
-            <label className="block text-sm font-medium tex-white">
+            <label className="block text-sm font-medium text-white mb-1">
               About *
             </label>
             <textarea
@@ -198,7 +208,7 @@ const EditProfile = ({ user }) => {
       </div>
 
       {/* User Card Section */}
-      <UserCard 
+      <UserCard
         user={{ firstName, lastName, photoUrl, about, gender, age, skills }}
       />
     </div>
