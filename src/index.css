@@ -55,6 +55,33 @@ html {
   color: rgba(255, 255, 255, 0.5);
 }
 
+@media (max-width: 768px) {
+  .emoji-picker-container {
+    width: 90%; /* Adjust for smaller screens */
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .emoji-picker-container {
+    width: 70%; /* Medium devices */
+  }
+}
+
+@media (min-width: 1025px) {
+  .emoji-picker-container {
+    width: 50%; /* Larger devices */
+  }
+}
+
+/* Scrollable picker for small screens */
+.emoji-picker-container {
+  overflow-y: auto;
+  max-height: 300px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+}
+
+
 /* Add this to your global styles or within the component's CSS file */
 @keyframes typing {
   0% {

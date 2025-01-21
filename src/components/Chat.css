@@ -1,0 +1,125 @@
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    margin: auto;
+    height: 90vh;
+    background-color: #1f2937;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .chat-header {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    background-color: #374151;
+  }
+  
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 12px;
+  }
+  
+  .user-name {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .messages-container {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    background-color: #1f2937;
+  }
+  
+  .message {
+    margin-bottom: 12px;
+  }
+  
+  .message-sent {
+    text-align: right;
+  }
+  
+  .message-received {
+    text-align: left;
+  }
+  
+  .message-sender {
+    font-weight: bold;
+    color: white;
+  }
+  
+  .message-content {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background-color: #2563eb;
+    color: white;
+  }
+  
+  .message-time {
+    display: block;
+    font-size: 12px;
+    color: #9ca3af;
+  }
+  
+  .chat-footer {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background-color: #374151;
+  }
+  
+  .chat-input {
+    flex: 1;
+    padding: 8px;
+    border-radius: 8px;
+    background-color: #4b5563;
+    color: white;
+    border: none;
+    margin-right: 8px;
+  }
+  
+  .emoji-button {
+    padding: 8px;
+    background-color: #4b5563;
+    color: white;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+  
+  .send-button {
+    padding: 8px 16px;
+    background-color: #2563eb;
+    color: white;
+    border-radius: 8px;
+  }
+  
+  .emoji-picker {
+    position: absolute;
+    bottom: 60px;
+    right: 20px;
+    z-index: 10;
+  }
+  
+  @media (max-width: 768px) {
+    .chat-container {
+      height: 100vh;
+      border-radius: 0;
+    }
+  
+    .chat-footer {
+      flex-direction: column;
+      gap: 8px;
+    }
+  
+    .emoji-picker {
+      right: auto;
+      left: 10px;
+    }
+  }
+  
