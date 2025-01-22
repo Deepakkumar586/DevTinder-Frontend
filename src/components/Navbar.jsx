@@ -74,9 +74,16 @@ const Navbar = () => {
         {/* Feed Button or Login Button */}
         <div className="flex mx-7 text-xl font-bold">
           {user ? (
+            <div className="flex gap-4">
             <Link to="/feed">
               <button className="text-white">Feed</button>
             </Link>
+            <Link to="/createGroup">
+            <button className="text-white">createGroup</button></Link>
+            <Link to="/listGroup">
+            <button className="text-white">GroupList</button></Link>
+            </div>
+            
           ) : (
             <Link to="/" className="text-white font-bold">
               Login

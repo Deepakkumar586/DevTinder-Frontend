@@ -9,7 +9,6 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import NotPremium from "./NotPremium";
 
-
 const Spinner = () => (
   <div className="flex justify-center mt-64 items-center h-full">
     <div className="loader text-white text-2xl">Loading...</div>
@@ -44,7 +43,7 @@ const Chat = () => {
     if (!timestamp || isNaN(new Date(timestamp).getTime())) {
       return "Invalid Time"; // If timestamp is invalid
     }
-  
+
     const now = new Date();
     const timeDiff = now - new Date(timestamp); // Difference in milliseconds
     const seconds = Math.floor(timeDiff / 1000);
@@ -53,7 +52,7 @@ const Chat = () => {
     const days = Math.floor(hours / 24);
     const weeks = Math.floor(days / 7);
     const months = Math.floor(days / 30); // Approximate months
-  
+
     if (seconds < 60) return "Just now";
     if (minutes < 60) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
     if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
@@ -61,7 +60,6 @@ const Chat = () => {
     if (weeks < 5) return `${weeks} week${weeks > 1 ? "s" : ""} ago`;
     return `${months} month${months > 1 ? "s" : ""} ago`;
   };
-  
 
   const fetchChat = async () => {
     setLoading((prev) => ({ ...prev, chat: true }));
@@ -203,59 +201,57 @@ const Chat = () => {
   if (messages.length >= MESSAGE_LIMIT) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-900">
-      <div className="w-full max-w-3xl p-6 mx-auto border border-gray-700 rounded-lg shadow-lg bg-gray-800">
-        <div className="text-center space-y-6">
-          <h1 className="text-3xl font-bold text-red-500">
-            Message Limit Reached!
-          </h1>
-    
-          {/* Professional Explanation */}
-          <div className="text-gray-300">
-            <p>
-              You’ve hit the limit of{" "}
-              <span className="font-semibold">{MESSAGE_LIMIT}</span> messages. To
-              continue messaging, consider upgrading to a premium plan for unlimited
-              access.
-            </p>
-          </div>
-    
-          {/* Funny Explanation */}
-          <div className="text-gray-300">
-            <p>Whoa there! 🛑 You’ve been chatting up a storm!</p>
-            <p>
-              Looks like you’ve reached the max limit of{" "}
-              <span className="font-semibold">{MESSAGE_LIMIT}</span> messages. We
-              can’t let you break the internet just yet! 😂
-            </p>
-          </div>
-    
-          {/* Encouraging Text */}
-          <div className="text-gray-300">
-            <p>Don’t stop now—there’s more to say and share! 🎉</p>
-            <p>
-              Upgrade your plan for infinite conversations, epic discussions, and
-              nonstop connections.
-            </p>
-          </div>
-    
-          {/* Unified Contact Section */}
-          <div className="text-gray-300">
-            <p>
-              For assistance or inquiries, contact us at{" "}
-              <a
-                className="text-blue-400 underline"
-                href="mailto:deeparyan345@gmail.com"
-              >
-                deeparyan345@gmail.com
-              </a>
-              .
-            </p>
+        <div className="w-full max-w-3xl p-6 mx-auto border border-gray-700 rounded-lg shadow-lg bg-gray-800">
+          <div className="text-center space-y-6">
+            <h1 className="text-3xl font-bold text-red-500">
+              Message Limit Reached!
+            </h1>
+
+            {/* Professional Explanation */}
+            <div className="text-gray-300">
+              <p>
+                You’ve hit the limit of{" "}
+                <span className="font-semibold">{MESSAGE_LIMIT}</span> messages.
+                To continue messaging, consider upgrading to a premium plan for
+                unlimited access.
+              </p>
+            </div>
+
+            {/* Funny Explanation */}
+            <div className="text-gray-300">
+              <p>Whoa there! 🛑 You’ve been chatting up a storm!</p>
+              <p>
+                Looks like you’ve reached the max limit of{" "}
+                <span className="font-semibold">{MESSAGE_LIMIT}</span> messages.
+                We can’t let you break the internet just yet! 😂
+              </p>
+            </div>
+
+            {/* Encouraging Text */}
+            <div className="text-gray-300">
+              <p>Don’t stop now—there’s more to say and share! 🎉</p>
+              <p>
+                Upgrade your plan for infinite conversations, epic discussions,
+                and nonstop connections.
+              </p>
+            </div>
+
+            {/* Unified Contact Section */}
+            <div className="text-gray-300">
+              <p>
+                For assistance or inquiries, contact us at{" "}
+                <a
+                  className="text-blue-400 underline"
+                  href="mailto:deeparyan345@gmail.com"
+                >
+                  deeparyan345@gmail.com
+                </a>
+                .
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    
-
     );
   }
 
@@ -331,19 +327,19 @@ const Chat = () => {
                   😊
                 </button>
                 {emojiPickerVisible && (
-  <div className="absolute bottom-16 left-0 right-0 z-50 mx-auto w-[90%] md:w-[50%] lg:w-[30%] bg-gray-700 rounded-lg shadow-lg p-4">
-    <Picker
-      onEmojiClick={(emoji) => {
-        setNewMessage((prev) => prev + emoji.emoji); // Add emoji to the message
-        setEmojiPickerVisible(false); // Hide the emoji picker
-      }}
-      pickerStyle={{
-        width: "100%",
-        height: "300px",
-      }}
-    />
-  </div>
-)}
+                  <div className="absolute bottom-16 left-0 right-0 z-50 mx-auto w-[90%] md:w-[50%] lg:w-[30%] bg-gray-700 rounded-lg shadow-lg p-4">
+                    <Picker
+                      onEmojiClick={(emoji) => {
+                        setNewMessage((prev) => prev + emoji.emoji); // Add emoji to the message
+                        setEmojiPickerVisible(false); // Hide the emoji picker
+                      }}
+                      pickerStyle={{
+                        width: "100%",
+                        height: "300px",
+                      }}
+                    />
+                  </div>
+                )}
 
                 <button
                   onClick={sendMessage}

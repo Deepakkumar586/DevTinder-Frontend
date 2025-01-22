@@ -41,11 +41,24 @@ const Connections = () => {
     fetchConnections();
   }, [dispatch]);
 
+
+  // handle chat
   const handleChatClick = (connectionId) => {
     if (!user?.isPremium) {
       navigate(`/not-premium/${connectionId}`);
     } else {
       navigate(`/chat/${connectionId}`);
+    }
+  };
+
+  // add user to group
+  const AddMemberToGroup = (userId, firstName, lastName) => {
+    if (!user?.isPremium) {
+      navigate(`/not-premium/${userId}`);
+    } else {
+      navigate(`/addmemberToGroup/${userId}`, {
+        state: { firstName, lastName },
+      });
     }
   };
 
@@ -126,6 +139,12 @@ const Connections = () => {
                 className="w-full mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300"
               >
                 Chat
+              </button>
+              <button
+                 onClick={() => AddMemberToGroup(_id, firstName, lastName)}
+                className="w-full mt-4 bg-pink-500 text-white py-2 px-4 rounded-lg hover:bg-pink-600 transition-colors duration-300"
+              >
+                Add member To Group
               </button>
             </div>
           );

@@ -17,6 +17,11 @@ import Premium from "./components/Premium";
 import Chat from "./components/Chat";
 import NotPremiumPage from "./components/NotPremiumPage";
 import toast from "react-hot-toast";
+import CreateGroup from "./components/CreateGroup";
+import GroupList from "./components/GroupList";
+import AddMemberToGroup from "./components/AddMemberToGroup";
+import GroupDetails from "./components/GroupDetails";
+import GroupChat from "./components/GroupChat";
 
 function App() {
   const user = useSelector((state) => state.user);
@@ -29,7 +34,7 @@ function App() {
     if (isLoggedIn && loginTime) {
       const currentTime = new Date().getTime();
       const timeElapsed = currentTime - loginTime;
-      const expiryTime = 10 * 60 * 1000;
+      const expiryTime = 2 * 60 * 60 * 1000;
 
       if (timeElapsed > expiryTime) {
         // If more than 4 days have passed, remove the login data
@@ -59,6 +64,7 @@ function App() {
             path="/"
             element={login ? <Navigate to="/feed" /> : <Login />}
           />
+          
 
           {/* Body component renders for protected routes */}
           <Route path="/" element={<Body />}>
@@ -69,6 +75,14 @@ function App() {
                 <Route
                   path="/feed"
                   element={<ProtectedRoute element={<Feed />} />}
+                />
+                <Route
+                  path="/createGroup"
+                  element={<ProtectedRoute element={<CreateGroup />} />}
+                />
+                <Route
+                  path="/listGroup"
+                  element={<ProtectedRoute element={<GroupList />} />}
                 />
                 <Route
                   path="/profile"
@@ -89,6 +103,18 @@ function App() {
                 <Route
                   path="/chat/:targetUserId"
                   element={<ProtectedRoute element={<Chat />} />}
+                />
+                <Route
+                  path="/addmemberToGroup/:userId"
+                  element={<ProtectedRoute element={<AddMemberToGroup />} />}
+                />
+                <Route
+                  path="/group/details/:groupId"
+                  element={<ProtectedRoute element={<GroupDetails />} />}
+                />
+                <Route
+                  path="/group/chat/:groupId"
+                  element={<ProtectedRoute element={<GroupChat />} />}
                 />
               </>
             )}
