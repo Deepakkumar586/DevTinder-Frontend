@@ -16,7 +16,7 @@ const Spinner = () => (
 );
 
 const Chat = () => {
-  const MESSAGE_LIMIT = 100;
+  const MESSAGE_LIMIT = 1000;
   const { targetUserId } = useParams();
   const user = useSelector((state) => state.user);
   const userId = user?._id;
@@ -41,11 +41,13 @@ const Chat = () => {
 
   const formatTime = (timestamp) => {
     if (!timestamp || isNaN(new Date(timestamp).getTime())) {
-      return "Invalid Time"; // If timestamp is invalid
+      return "Just now"; // Default fallback for invalid or recently sent timestamps
     }
 
     const now = new Date();
-    const timeDiff = now - new Date(timestamp); // Difference in milliseconds
+    const messageTime = new Date(timestamp); // Parse the timestamp
+    const timeDiff = now - messageTime;
+
     const seconds = Math.floor(timeDiff / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
@@ -190,11 +192,9 @@ const Chat = () => {
         color,
       };
 
-      socket.emit("sendMessage", messageData);
-      setMessages((prevMessages) => [...prevMessages, messageData]);
-
-      setNewMessage("");
-      socket.emit("typing", false);
+      socket.emit("sendMessage", messageData); // Emit to server
+      setNewMessage(""); // Clear input field
+      socket.emit("typing", false); // Notify typing stopped
     }
   };
 

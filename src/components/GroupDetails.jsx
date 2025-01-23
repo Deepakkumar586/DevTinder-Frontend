@@ -38,8 +38,6 @@ const GroupDetails = () => {
           { withCredentials: true }
         );
 
-        console.log("API Response:", response.data);
-
         if (response.data.success) {
           setGroup(response.data.group);
           toast.success(response.data.message);
@@ -80,9 +78,12 @@ const GroupDetails = () => {
       {/* Group Header */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold mb-4">Group Name : {group.name}</h1>
-        <p className="text-gray-400 text-lg">Group Decription : {group.description}</p>
+        <p className="text-gray-400 text-lg">
+          Group Decription : {group.description}
+        </p>
         <p className="text-gray-500 mt-2 text-sm">
-          Created: {getRelativeTime(group.createdAt)} by {group.createdBy.firstName} {group.createdBy.lastName}
+          Created: {getRelativeTime(group.createdAt)} by{" "}
+          {group.createdBy.firstName} {group.createdBy.lastName}
         </p>
       </div>
 
@@ -120,7 +121,8 @@ const GroupDetails = () => {
                 <span className="font-semibold">Role:</span> {member.role}
               </p>
               <p className="text-gray-300 text-sm mt-1">
-                <span className="font-semibold">Joined:</span> {getRelativeTime(member.joinedAt)}
+                <span className="font-semibold">Joined:</span>{" "}
+                {getRelativeTime(member.joinedAt)}
               </p>
               <p className="text-gray-300 text-sm mt-1 text-center">
                 {member.userId.about}

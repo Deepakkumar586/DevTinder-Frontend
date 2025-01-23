@@ -5,8 +5,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../utils/constants";
 import { removeUser } from "../utils/userSlice";
 import toast from "react-hot-toast";
-import Swal from "sweetalert2"; // Import SweetAlert2
-import "sweetalert2/src/sweetalert2.scss"; // Import SweetAlert2 styles
+import Swal from "sweetalert2";
+import "sweetalert2/src/sweetalert2.scss";
+import { FaBarsProgress } from "react-icons/fa6";
 
 const Navbar = () => {
   const user = useSelector((state) => state.user);
@@ -14,9 +15,9 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    window.localStorage.removeItem('isLoggedIn');
-  window.localStorage.removeItem('loginTime');
- 
+    window.localStorage.removeItem("isLoggedIn");
+    window.localStorage.removeItem("loginTime");
+
     try {
       await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
       dispatch(removeUser());
@@ -66,7 +67,7 @@ const Navbar = () => {
           <img
             src="https://i.pinimg.com/60x60/e8/c6/21/e8c6214faaff002da5b06a5e6133a57e.jpg"
             alt="Tinder Icon"
-            className="w-8 h-8 mr-2 rounded-[50%]"
+            className="w-8 h-8 mr-1 rounded-[50%]"
           />
           SocailSparks
         </Link>
@@ -74,16 +75,53 @@ const Navbar = () => {
         {/* Feed Button or Login Button */}
         <div className="flex mx-7 text-xl font-bold">
           {user ? (
-            <div className="flex gap-4">
-            <Link to="/feed">
-              <button className="text-white">Feed</button>
-            </Link>
-            <Link to="/createGroup">
-            <button className="text-white">createGroup</button></Link>
-            <Link to="/listGroup">
-            <button className="text-white">GroupList</button></Link>
+            <div className="flex gap-2">
+              {/* Dropdown for Small Screens */}
+              <details className="dropdown lg:hidden">
+                <summary className="btn m-1 bg-base-300">
+                  <FaBarsProgress className="w-6" />
+                </summary>
+                <ul className="menu dropdown-content bg-base-100 rounded-lg z-[1] w-40 p-2 shadow">
+                  <li>
+                    <Link to="/feed" className="font-semibold">
+                      Feed
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/createGroup" className="font-semibold">
+                      Create Group
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/listGroup" className="font-semibold">
+                      Group List
+                    </Link>
+                  </li>
+                </ul>
+              </details>
+
+              {/* Links for Large Screens */}
+              <div className="hidden lg:flex items-center gap-4">
+                <Link
+                  to="/feed"
+                  className=" font-semibold hover:underline"
+                >
+                  Feed
+                </Link>
+                <Link
+                  to="/createGroup"
+                  className=" font-semibold hover:underline"
+                >
+                  Create Group
+                </Link>
+                <Link
+                  to="/listGroup"
+                  className=" font-semibold hover:underline"
+                >
+                  Group List
+                </Link>
+              </div>
             </div>
-            
           ) : (
             <Link to="/" className="text-white font-bold">
               Login
