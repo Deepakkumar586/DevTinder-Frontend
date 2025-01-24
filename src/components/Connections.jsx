@@ -5,7 +5,6 @@ import { BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { addConnection } from "../utils/connectionSlice";
 
-
 const SkeletonCard = () => (
   <div className="flex flex-col items-center bg-gray-200 animate-pulse shadow-md rounded-xl p-6 space-y-4">
     <div className="w-24 h-24 rounded-full bg-gray-300 mb-4"></div>
@@ -28,7 +27,9 @@ const Connections = () => {
       const res = await axios.get(`${BASE_URL}/user/connections`, {
         withCredentials: true,
       });
+
       dispatch(addConnection(res.data.data));
+
       setLoading(false);
     } catch (err) {
       console.error("Error fetching connections:", err);
@@ -40,7 +41,6 @@ const Connections = () => {
   useEffect(() => {
     fetchConnections();
   }, [dispatch]);
-
 
   // handle chat
   const handleChatClick = (connectionId) => {
@@ -54,7 +54,7 @@ const Connections = () => {
   // add user to group
   const AddMemberToGroup = (userId, firstName, lastName) => {
     if (!user?.isPremium) {
-      navigate(`/not-premium/${userId}`);
+      navigate(`/not-premium`);
     } else {
       navigate(`/addmemberToGroup/${userId}`, {
         state: { firstName, lastName },
@@ -105,7 +105,7 @@ const Connections = () => {
   }
 
   return (
-    <div className="p-6 m-10">
+    <div className="p-6 m-14">
       <h1 className="text-3xl font-semibold text-center mb-6">Connections</h1>
       <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {connections.map((connection) => {
@@ -136,16 +136,18 @@ const Connections = () => {
               </div>
               <button
                 onClick={() => handleChatClick(_id)}
-                className="w-full mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+                className="w-full mt-4 border text-white py-2 px-4 rounded-lg border-gray-600 hover:bg-gray-700 transition-colors duration-300"
               >
                 Chat
               </button>
-              <button
-                 onClick={() => AddMemberToGroup(_id, firstName, lastName)}
-                className="w-full mt-4 bg-pink-500 text-white py-2 px-4 rounded-lg hover:bg-pink-600 transition-colors duration-300"
-              >
-                Add member To Group
-              </button>
+              {connection.isPremium && (
+                <button
+                  onClick={() => AddMemberToGroup(_id, firstName, lastName)}
+                  className="w-full mt-4 border bottom-4 border-gray-600 hover:bg-gray-700  text-white py-2 px-4 rounded-lg  transition-colors duration-300"
+                >
+                  Add to Group
+                </button>
+              )}
             </div>
           );
         })}

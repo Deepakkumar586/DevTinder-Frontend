@@ -8,11 +8,13 @@ import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import "sweetalert2/src/sweetalert2.scss";
 import { FaBarsProgress } from "react-icons/fa6";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [userhaveGroup, setUserhaveGroup] = useState(false);
 
   const handleLogout = async () => {
     window.localStorage.removeItem("isLoggedIn");
@@ -58,6 +60,24 @@ const Navbar = () => {
     }
   };
 
+  // check logged in user  have a  any group
+  const checkGroup = async () => {
+    const response = await axios.get(`${BASE_URL}/check/all-groups`, {
+      withCredentials: true,
+    });
+    const loggedInUserId = user?._id;
+
+    // Check if the user is a member of any group
+    const userHaveGroup = response?.data?.groups.some((group) =>
+      group.members.some((member) => member.userId._id === loggedInUserId)
+    );
+    setUserhaveGroup(userHaveGroup);
+  };
+
+  useEffect(() => {
+    checkGroup();
+  }, []);
+
   return (
     <nav className="navbar bg-base-300 fixed top-0 z-10 shadow-lg px-4 py-2 w-full max-w-full">
       <div className="flex justify-between items-center w-full">
@@ -87,39 +107,59 @@ const Navbar = () => {
                       Feed
                     </Link>
                   </li>
-                  <li>
-                    <Link to="/createGroup" className="font-semibold">
-                      Create Group
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/listGroup" className="font-semibold">
-                      Group List
-                    </Link>
-                  </li>
+                  {userhaveGroup && user?.isPremium ? (
+                    <>
+                      <li>
+                        <Link to="/createGroup" className="font-semibold">
+                          Create Group
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/listGroup" className="font-semibold">
+                          Group List
+                        </Link>
+                      </li>
+                    </>
+                  )  : (
+                    <li>
+                      <Link to="/not-premium" className="font-semibold">
+                        Don't Click
+                      </Link>
+                    </li>
+                  )
+                
+                }
                 </ul>
               </details>
 
               {/* Links for Large Screens */}
               <div className="hidden lg:flex items-center gap-4">
-                <Link
-                  to="/feed"
-                  className=" font-semibold hover:underline"
-                >
+                <li>
+                <Link to="/feed" className=" font-semibold hover:underline">
                   Feed
                 </Link>
-                <Link
-                  to="/createGroup"
-                  className=" font-semibold hover:underline"
-                >
-                  Create Group
-                </Link>
-                <Link
-                  to="/listGroup"
-                  className=" font-semibold hover:underline"
-                >
-                  Group List
-                </Link>
+                </li>
+                {userhaveGroup && user?.isPremium ? (
+                  <>
+                    <li>
+                      <Link to="/createGroup" className="font-semibold">
+                        Create Group
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/listGroup" className="font-semibold">
+                        Group List
+                      </Link>
+                    </li>
+                  </>
+                ) : (
+                  <li>
+                    <Link to="/not-premium" className="font-semibold">
+                      Don't Click
+                    </Link>
+                  </li>
+                )
+              }
               </div>
             </div>
           ) : (

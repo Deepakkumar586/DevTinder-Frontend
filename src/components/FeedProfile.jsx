@@ -51,7 +51,7 @@ const FeedProfile = () => {
   }, [dispatch]);
 
   return (
-    <div className="p-4 lg:p-6 m-4 lg:m-16 bg-base-100 rounded-lg text-white shadow-lg">
+    <div className="p-4 lg:p-6 m-8 lg:m-16 bg-base-100 rounded-lg text-white shadow-lg">
       {/* Profile Picture Section */}
       <div className="flex items-center gap-4 relative">
         {loading ? (

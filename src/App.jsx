@@ -22,6 +22,7 @@ import GroupList from "./components/GroupList";
 import AddMemberToGroup from "./components/AddMemberToGroup";
 import GroupDetails from "./components/GroupDetails";
 import GroupChat from "./components/GroupChat";
+import DoNotClick from "./components/DoNotClick";
 
 function App() {
   const user = useSelector((state) => state.user);
@@ -115,6 +116,10 @@ function App() {
                 <Route
                   path="/group/chat/:groupId"
                   element={<ProtectedRoute element={<GroupChat />} />}
+                />
+                <Route
+                  path="/not-premium"
+                  element={<ProtectedRoute element={<DoNotClick />} />}
                 />
               </>
             )}
