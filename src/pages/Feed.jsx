@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BASE_URL } from '../utils/constants';
 import { addFeed, removeFeed } from '../utils/feedSlice';
 import axios from 'axios';
-import { Heart, MapPin, User, RefreshCw, X, Briefcase } from 'lucide-react';
+import { Heart, MapPin, User, RefreshCw, X, Code } from 'lucide-react';
 import toast from 'react-hot-toast';
-import gsap from 'gsap';
+import UserProfile from '../components/UserProfile';
 
 const Feed = () => {
   const dispatch = useDispatch();
@@ -16,8 +16,6 @@ const Feed = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [localFeeds, setLocalFeeds] = useState([]);
-  const cardRefs = useRef([]);
-  const containerRef = useRef(null);
 
   const getFeed = async (isLoadMore = false) => {
     try {
@@ -27,15 +25,14 @@ const Feed = () => {
         setLoading(true);
       }
       const res = await axios.get(BASE_URL + '/api/feed', { withCredentials: true });
-      dispatch(addFeed(res.data.data));
-      setLocalFeeds(res.data.data);
+      dispatch(addFeed(res.data?.data));
+      setLocalFeeds(res.data?.data);
 
       if (!isLoadMore) {
         setCurrentIndex(0);
-        cardRefs.current = [];
       }
     } catch (err) {
-      console.log(err);
+      console.log(err.response.data);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -56,42 +53,21 @@ const Feed = () => {
     }
   };
 
-  const swipeCard = (direction, userId) => {
+  const handleAction = async (action, userId) => {
     if (isAnimating) return;
-
+    
     setIsAnimating(true);
-    const currentCard = cardRefs.current[currentIndex];
-
-    if (!currentCard) {
-      setIsAnimating(false);
-      return;
-    }
-
-    const xValue = direction === 'right' ? 800 : -800;
-    const rotation = direction === 'right' ? 30 : -30;
-
-    gsap.to(currentCard, {
-      x: xValue,
-      rotation: rotation,
-      opacity: 0,
-      duration: 0.4,
-      ease: "power2.in",
-      onComplete: async () => {
-        const success = await RequestSend(direction === 'right' ? 'interested' : 'ignored', userId);
-
-        if (success) {
-          const nextIndex = currentIndex;
-
-          if (localFeeds.length <= 3 && !isFetchingMore) {
-            await getFeed(true);
-          }
-
-          setCurrentIndex(nextIndex);
-        }
-
-        setIsAnimating(false);
+    const success = await RequestSend(action === 'connect' ? 'interested' : 'ignored', userId);
+    
+    if (success) {
+      const nextIndex = currentIndex + 1;
+      if (localFeeds.length - nextIndex <= 2 && !isFetchingMore) {
+        await getFeed(true);
       }
-    });
+      setCurrentIndex(nextIndex);
+    }
+    
+    setIsAnimating(false);
   };
 
   useEffect(() => {
@@ -104,67 +80,42 @@ const Feed = () => {
     }
   }, [feeds]);
 
-  useEffect(() => {
-    if (localFeeds && localFeeds.length > 0 && currentIndex < localFeeds.length) {
-      setTimeout(() => {
-        localFeeds.forEach((_, index) => {
-          const card = cardRefs.current[index];
-          if (card) {
-            if (index === currentIndex) {
-              gsap.set(card, {
-                y: 0,
-                scale: 1,
-                opacity: 1,
-                x: 0,
-                rotation: 0,
-                zIndex: 100,
-                display: 'block',
-                visibility: 'visible'
-              });
-            } else if (index > currentIndex) {
-              const stackOffset = index - currentIndex;
-              const scale = Math.max(0.85, 1 - stackOffset * 0.07);
-              const yOffset = stackOffset * 15;
-
-              gsap.set(card, {
-                y: yOffset,
-                scale: scale,
-                opacity: 0.7,
-                x: 0,
-                rotation: 0,
-                zIndex: 100 - stackOffset,
-                display: 'block',
-                visibility: 'visible'
-              });
-            } else {
-              gsap.set(card, { display: 'none', visibility: 'hidden' });
-            }
-          }
-        });
-      }, 50);
-    }
-  }, [localFeeds, currentIndex]);
-
   const handleRefresh = () => {
-    
     setCurrentIndex(0);
-    cardRefs.current = [];
     getFeed();
-  };
-
-  const formatUserInfo = (user) => {
-    const info = [];
-    if (user.age) info.push(`${user.age}years`);
-    if (user.gender) info.push(user.gender);
-    return info.join(' • ');
   };
 
   if (loading && !refreshing) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0A0A0F] to-[#1A1A2A] flex items-center justify-center p-4">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-          <p className="text-white text-sm font-medium">Loading...</p>
+      <div className="min-h-screen bg-gradient-to-br from-[#0A0A0F] to-[#1A1A2A] p-6 py-20">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-white">Discover</h1>
+              <p className="text-[#A0A0B0] text-md">Connect with developers</p>
+            </div>
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing || isAnimating}
+              className="px-2.5 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-white transition-all flex items-center gap-1.5 border border-white/10 text-md cursor-pointer"
+            >
+              <RefreshCw size={12} className={refreshing ? "animate-spin" : ""} />
+              {refreshing ? 'Refreshing...' : 'Refresh'}
+            </button>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-4">
+              <UserProfile />
+            </div>
+            <div className="lg:col-span-8">
+              <div className="flex justify-center items-center min-h-[500px]">
+                <div className="text-center">
+                  <div className="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                  <p className="text-white text-sm font-medium">Loading developers...</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -172,18 +123,43 @@ const Feed = () => {
 
   if ((!localFeeds || localFeeds.length === 0) && !loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0A0A0F] to-[#1A1A2A] flex flex-col items-center justify-center p-4">
-        <div className="bg-[#161622] rounded-xl p-6 max-w-sm w-full text-center border border-white/10">
-          <User size={36} className="text-purple-600 mx-auto mb-3" />
-          <h2 className="text-xl font-bold text-white mb-2">No Developers Found</h2>
-          <p className="text-[#A0A0B0] text-sm mb-5">We couldn't find any developers in your feed right now.</p>
-          <button
-            onClick={handleRefresh}
-            className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-all flex items-center justify-center gap-2 mx-auto cursor-pointer"
-          >
-            <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
-            {refreshing ? 'Refreshing...' : 'Refresh Feed'}
-          </button>
+      <div className="min-h-screen bg-gradient-to-br from-[#0A0A0F] to-[#1A1A2A] p-6 py-20">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-white">Discover</h1>
+              <p className="text-[#A0A0B0] text-md">Connect with developers</p>
+            </div>
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing || isAnimating}
+              className="px-2.5 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-white transition-all flex items-center gap-1.5 border border-white/10 text-md cursor-pointer"
+            >
+              <RefreshCw size={12} className={refreshing ? "animate-spin" : ""} />
+              {refreshing ? 'Refreshing...' : 'Refresh'}
+            </button>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-4">
+              <UserProfile />
+            </div>
+            <div className="lg:col-span-8">
+              <div className="flex flex-col items-center justify-center min-h-[500px]">
+                <div className="bg-[#161622] rounded-xl p-6 max-w-sm w-full text-center border border-white/10">
+                  <User size={36} className="text-purple-600 mx-auto mb-3" />
+                  <h2 className="text-xl font-bold text-white mb-2">No Developers Found</h2>
+                  <p className="text-[#A0A0B0] text-sm mb-5">We couldn't find any developers in your feed right now.</p>
+                  <button
+                    onClick={handleRefresh}
+                    className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-all flex items-center justify-center gap-2 mx-auto cursor-pointer"
+                  >
+                    <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+                    {refreshing ? 'Refreshing...' : 'Refresh Feed'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -193,20 +169,45 @@ const Feed = () => {
 
   if (!hasMoreCards && !loading && localFeeds.length > 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0A0A0F] to-[#1A1A2A] flex flex-col items-center justify-center p-4">
-        <div className="bg-[#161622] rounded-xl p-6 max-w-sm w-full text-center border border-white/10">
-          <div className="w-14 h-14 bg-gradient-to-br from-purple-600/20 to-pink-600/20 rounded-full flex items-center justify-center mx-auto mb-3">
-            <User size={28} className="text-purple-600" />
+      <div className="min-h-screen bg-gradient-to-br from-[#0A0A0F] to-[#1A1A2A] p-6 py-20">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-white">Discover</h1>
+              <p className="text-[#A0A0B0] text-md">Connect with developers</p>
+            </div>
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing || isAnimating}
+              className="px-2.5 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-white transition-all flex items-center gap-1.5 border border-white/10 text-md cursor-pointer"
+            >
+              <RefreshCw size={12} className={refreshing ? "animate-spin" : ""} />
+              {refreshing ? 'Refreshing...' : 'Refresh'}
+            </button>
           </div>
-          <h2 className="text-xl font-bold text-white mb-2">All Caught Up!</h2>
-          <p className="text-[#A0A0B0] text-sm mb-5">You've seen all developers for now. Check back later!</p>
-          <button
-            onClick={handleRefresh}
-            className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-all flex items-center justify-center gap-2 mx-auto cursor-pointer"
-          >
-            <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
-            {refreshing ? 'Refreshing...' : 'Load New'}
-          </button>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-4">
+              <UserProfile />
+            </div>
+            <div className="lg:col-span-8">
+              <div className="flex flex-col items-center justify-center min-h-[500px]">
+                <div className="bg-[#161622] rounded-xl p-6 max-w-sm w-full text-center border border-white/10">
+                  <div className="w-14 h-14 bg-gradient-to-br from-purple-600/20 to-pink-600/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <User size={28} className="text-purple-600" />
+                  </div>
+                  <h2 className="text-xl font-bold text-white mb-2">All Caught Up!</h2>
+                  <p className="text-[#A0A0B0] text-sm mb-5">You've seen all developers for now. Check back later!</p>
+                  <button
+                    onClick={handleRefresh}
+                    className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-all flex items-center justify-center gap-2 mx-auto cursor-pointer"
+                  >
+                    <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+                    {refreshing ? 'Refreshing...' : 'Load New'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -215,13 +216,23 @@ const Feed = () => {
   const currentUser = localFeeds[currentIndex];
 
   if (!currentUser) {
-    return null;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#0A0A0F] to-[#1A1A2A] p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-4">
+              <UserProfile />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0A0A0F] to-[#1A1A2A] pt-[100px] p-3">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#0A0A0F] to-[#1A1A2A] p-6">
+      <div className="max-w-7xl mx-auto py-20">
+        <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-bold text-white">Discover</h1>
             <p className="text-[#A0A0B0] text-md">Connect with developers</p>
@@ -229,123 +240,163 @@ const Feed = () => {
           <button
             onClick={handleRefresh}
             disabled={refreshing || isAnimating}
-            className="px-2.5 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-white transition-all flex items-center gap-1.5 border border-white/10 text-md cursor-pointer"
+            className="px-3 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-white transition-all flex items-center gap-2 border border-white/10 text-sm cursor-pointer"
           >
-            <RefreshCw size={12} className={refreshing ? "animate-spin" : ""} />
+            <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
             {refreshing ? 'Refreshing...' : 'Refresh'}
           </button>
         </div>
-
-        <div
-          ref={containerRef}
-          className="relative flex justify-center items-center"
-          style={{ minHeight: '500px' }}
-        >
-          {localFeeds.map((user, index) => {
-            if (index < currentIndex) return null;
-
-            const userInfo = formatUserInfo(user);
-            const isCurrent = index === currentIndex;
-
-            return (
-              <div
-                key={user._id}
-                ref={el => {
-                  if (el) {
-                    cardRefs.current[index] = el;
-                  }
-                }}
-                className="absolute w-full"
-                style={{
+        
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-4">
+            <UserProfile />
+          </div>
+          <div className="lg:col-span-8">
+            <div className="relative flex justify-center items-start min-h-[550px]">
+              {localFeeds.map((user, index) => {
+                const isCurrent = index === currentIndex;
+                const stackPosition = index - currentIndex;
+                
+                if (stackPosition > 4) return null;
+                
+                const stackStyle = {
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: `translate(-50%, -50%) translateY(${stackPosition * 20}px)`,
+                  zIndex: 100 - stackPosition,
                   width: '100%',
-                  maxWidth: '300px',
-                  pointerEvents: isCurrent ? 'auto' : 'none',
-                }}
-              >
-                <div className="bg-[#161622] rounded-xl overflow-hidden border border-white/10 shadow-xl">
-                  <div className="relative h-56 overflow-hidden">
-                    <img
-                      src={user.photoUrl}
-                      alt={`${user.firstName} ${user.lastName}`}
-                      className="w-full h-full object-cover"
-                    />
-
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-
-                    {userInfo && (
-                      <span className="absolute top-2 right-2 text-xs px-2 py-1 bg-black/80 backdrop-blur-sm text-white rounded-full border border-purple-600/30">
-                        {userInfo}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="p-3">
-                    <div className="mb-2">
-                      <h2 className="text-base font-semibold text-white truncate">
-                        {user.firstName} {user.lastName}
-                      </h2>
-                      {user.location && (
-                        <div className="flex items-center gap-1 text-[#A0A0B0] mb-1.5">
-                          <MapPin size={12} />
-                          <span className="text-xs">{user.location}</span>
+                  maxWidth: '360px',
+                  transition: 'all 0.3s ease-in-out',
+                  cursor: isCurrent ? 'default' : 'pointer',
+                };
+                
+                return (
+                  <div
+                    key={user._id}
+                    style={stackStyle}
+                    className="absolute"
+                    onClick={() => !isCurrent && setCurrentIndex(index)}
+                  >
+                    <div className={`bg-[#1A1A2A] rounded-2xl overflow-hidden transition-all duration-300 shadow-xl ${
+                      isCurrent 
+                        ? 'ring-2 ring-purple-500 shadow-2xl shadow-purple-600/30 scale-105' 
+                        : 'shadow-lg hover:shadow-2xl hover:scale-[1.02]'
+                    }`}>
+                      <div className="relative h-48 overflow-hidden">
+                        <img
+                          src={user.photoUrl || '/api/placeholder/300/400'}
+                          alt={`${user.firstName} ${user.lastName}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.src = '/api/placeholder/300/400';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+                        
+                        <div className="absolute bottom-3 right-3 text-xs px-2 py-1 bg-black/80 backdrop-blur-sm text-white rounded-full font-medium">
+                          {index + 1}/{localFeeds.length}
                         </div>
-                      )}
-                    </div>
 
-                    {user.about && (
-                     
-                        <p className="text-xs text-[#A0A0B0] mb-2 line-clamp-2">
-                          {user.about}
-                        </p>
-                      
-                    )}
-
-                    {user.skills && user.skills.length > 0 && (
-                      <div className="mb-3">
-                        <div className="flex flex-wrap gap-1">
-                          {user.skills.slice(0, 3).map((skill, skillIndex) => (
-                            <span
-                              key={skillIndex}
-                              className="text-[10px] px-1.5 py-0.5 bg-white/5 rounded-full text-[#A0A0B0]"
-                            >
-                              {skill.length > 10 ? skill.substring(0, 8) + '...' : skill}
-                            </span>
-                          ))}
-                          {user.skills.length > 3 && (
-                            <span className="text-[10px] px-1.5 py-0.5 bg-white/5 rounded-full text-[#A0A0B0]">
-                              +{user.skills.length - 3}
-                            </span>
-                          )}
-                        </div>
+                        {isCurrent && (
+                          <div className="absolute top-3 left-3 text-xs px-2 py-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-medium shadow-lg">
+                            ● Active
+                          </div>
+                        )}
                       </div>
-                    )}
 
-                    <div className="flex items-center justify-between gap-2">
-                      <button
-                        className="flex-1 px-3 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-red-500/20 hover:border-red-500/40"
-                        onClick={() => swipeCard('left', user._id)}
-                        disabled={isAnimating}
-                      >
-                        <X size={12} />
-                        Pass
-                      </button>
+                      <div className="p-4">
+                        <div className="mb-3">
+                          <h2 className="text-xl font-bold text-white">
+                            {user.firstName} {user.lastName}
+                          </h2>
+                          
+                          <div className="flex items-center gap-2 mt-1">
+                            {user.age && (
+                              <span className="text-xs px-2 py-0.5 bg-purple-600/20 text-purple-300 rounded-full">
+                                {user.age} years
+                              </span>
+                            )}
+                            {user.gender && (
+                              <span className="text-xs px-2 py-0.5 bg-blue-600/20 text-blue-300 rounded-full capitalize">
+                                {user.gender}
+                              </span>
+                            )}
+                          </div>
+                        </div>
 
-                      <button
-                        className="flex-1 px-3 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-lg shadow-purple-600/25"
-                        onClick={() => swipeCard('right', user._id)}
-                        disabled={isAnimating}
-                      >
-                        <Heart size={12} />
-                        Connect
-                      </button>
+                        {user.location && (
+                          <div className="mb-3 flex items-center gap-2 text-[#A0A0B0] bg-white/5 rounded-lg p-2">
+                            <MapPin size={14} className="text-purple-400" />
+                            <span className="text-sm font-medium">{user.location}</span>
+                          </div>
+                        )}
+
+                        {user.about && (
+                          <p className="text-sm text-[#A0A0B0] mb-3 line-clamp-2 italic">
+                            "{user.about}"
+                          </p>
+                        )}
+
+                        {user.skills && user.skills.length > 0 && (
+                          <div className="mb-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Code size={14} className="text-purple-400" />
+                              <span className="text-xs font-semibold text-purple-400 uppercase tracking-wider">Skills</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {user.skills.slice(0, 4).map((skill, skillIndex) => (
+                                <span
+                                  key={skillIndex}
+                                  className="text-xs px-2.5 py-1.5 bg-gradient-to-r from-purple-600/20 to-pink-600/20 text-purple-300 rounded-lg font-medium"
+                                >
+                                  {skill}
+                                </span>
+                              ))}
+                              {user.skills.length > 4 && (
+                                <span className="text-xs px-2.5 py-1.5 bg-white/10 text-[#A0A0B0] rounded-lg">
+                                  +{user.skills.length - 4}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {isCurrent && (
+                          <div className="flex items-center gap-2 mt-4">
+                            <button
+                              className="flex-1 px-3 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer"
+                              onClick={() => handleAction('pass', user._id)}
+                              disabled={isAnimating}
+                            >
+                              <X size={16} />
+                              Pass
+                            </button>
+
+                            <button
+                              className="flex-1 px-3 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-purple-600/30"
+                              onClick={() => handleAction('connect', user._id)}
+                              disabled={isAnimating}
+                            >
+                              <Heart size={16} />
+                              Connect
+                            </button>
+                          </div>
+                        )}
+
+                        {!isCurrent && (
+                          <div className="text-center mt-3 pt-2">
+                            <span className="text-xs text-purple-400/70 font-medium">Click to view profile & connect</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            );
-          })}
+                );
+              })}
+            </div>
+          </div>
         </div>
-
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
   LogOut, 
@@ -23,6 +23,10 @@ const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  
+
+  const requests = useSelector((state) => state.requests.requests);
+  const requestCount = requests?.length || 0;
 
   const handleLogout = async () => {
     try {
@@ -37,7 +41,6 @@ const Navbar = () => {
     }
   };
 
- 
   const getNavLinkClass = ({ isActive }) => 
     `relative px-4 py-2 text-sm font-medium transition-all duration-300 flex items-center gap-2 rounded-full ${
       isActive 
@@ -83,7 +86,14 @@ const Navbar = () => {
                   </li>
                   <li>
                     <NavLink to="/requests" className={getNavLinkClass}>
-                      <UserPlus size={16} />
+                      <div className="relative">
+                        <UserPlus size={16} />
+                        {requestCount > 0 && (
+                          <span className="absolute -top-3 -right-2 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 ">
+                            {requestCount > 9 ? '9+' : requestCount}
+                          </span>
+                        )}
+                      </div>
                       <span>Requests</span>
                     </NavLink>
                   </li>
@@ -107,6 +117,8 @@ const Navbar = () => {
                         <BadgeCheck size={12} className="text-white" />
                       </div>
                     )}
+                   
+                   
                   </div>
                   
                   <ChevronDown
@@ -119,7 +131,7 @@ const Navbar = () => {
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-3 w-64 rounded-2xl shadow-2xl py-2 z-50 bg-[#161B22] border border-white/10 animate-in fade-in zoom-in duration-200">
                     <div className="px-4 py-3 mb-1 border-b border-white/5">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Account</p>
+                      
                       <div className="flex items-center gap-3">
                         <img
                           src={user.photoUrl || placeholderAvatar}
@@ -156,6 +168,17 @@ const Navbar = () => {
                         <Link to="/connections" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 text-gray-300 hover:text-white cursor-pointer" onClick={() => setIsDropdownOpen(false)}>
                           <Users size={18} className="text-gray-400" />
                           <span className="text-sm font-medium">Connections</span>
+                        </Link>
+                        <Link to="/requests" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 text-gray-300 hover:text-white cursor-pointer" onClick={() => setIsDropdownOpen(false)}>
+                          <div className="relative">
+                            <UserPlus size={18} className="text-gray-400" />
+                            {requestCount > 0 && (
+                              <span className="absolute -top-1 -right-2 min-w-[16px] h-[16px] bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1">
+                                {requestCount > 9 ? '9+' : requestCount}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-sm font-medium">Requests</span>
                         </Link>
                       </div>
 

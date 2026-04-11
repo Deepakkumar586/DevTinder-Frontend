@@ -18,6 +18,7 @@ import Requests from "./components/Requests"
 import About from "./pages/About"
 import PrivacyPolicy from "./pages/PrivacyPolicy"
 import Contact from "./pages/Contact"
+import UserProfile from "./components/UserProfile"
 
 
 function App() {
@@ -51,7 +52,9 @@ function App() {
               <Route path="/requests" element={<ProtectedRoute><Requests/></ProtectedRoute>}/>
 
             </Route>
-            <Route path="*" element={<NotFound />} />
+           
+            <Route path="/user-profile" element={<UserProfile />} />
+             <Route path="*" element={<NotFound />} />
           </Routes>
 
         </BrowserRouter>

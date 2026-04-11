@@ -4,9 +4,13 @@ import UserCard from '../components/UserCard';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { BASE_URL } from '../utils/constants';
+import { useDispatch } from 'react-redux';
+import { updateUser } from '../utils/authSlice';
+
 
 const EditProfile = ({ user }) => {
   const [error,setError] = useState("");
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
@@ -41,6 +45,7 @@ const EditProfile = ({ user }) => {
         : formData.skills
     };
       const res = await axios.patch(BASE_URL + '/api/update/profile', updateData, { withCredentials: true });
+          dispatch(updateUser(res.data.data)); 
       toast.success("Profile updated successfully");
 
     }
